@@ -1,0 +1,38 @@
+---
+version: 2
+project_name: simple-slurm-json-exporter
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - id: amd64
+    main: ./
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+    ldflags:
+      - -w -s
+      - -X github.com/prometheus/common/version.Version={{.Version}}
+      - -X github.com/prometheus/common/version.Revision={{.FullCommit}}
+      - -X github.com/prometheus/common/version.Branch={{.Branch}}
+      - -X github.com/prometheus/common/version.BuildUser=goreleaser
+      - -X github.com/prometheus/common/version.BuildDate={{.Date}}
+archives:
+  - id: archive
+    ids:
+      - amd64
+    files:
+      - LICENSE
+      - CHANGELOG.md
+      - README.md
+    name_template: "simple-slurm-json-exporter-{{ .Version }}.{{ .Os }}-{{ .Arch }}"
+    wrap_in_directory: true
+checksum:
+  name_template: 'checksums.txt'
+release:
+  prerelease: auto
+changelog:
+  sort: asc
